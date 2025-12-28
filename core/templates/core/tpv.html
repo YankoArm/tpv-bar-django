@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>TPV Bar Cholo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg-main: #090909;
+            --bg-panel: #1a1111;
+            --bg-card: #241515;
+            --border-soft: #3b2525;
+            --accent-bebidas: #ffd166;  /* maíz */
+            --accent-comidas: #a7d129;  /* verde lima */
+            --accent-action: #ff7b00;   /* chile naranja */
+            --text-main: #fdfdfd;
+            --text-muted: #b8a5a5;
+            --danger: #ff4b4b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            background: radial-gradient(circle at top, #301010 0, #090909 55%, #000000 100%);
+            color: var(--text-main);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #1b1010, #351616);
+            border-bottom: 1px solid var(--border-soft);
+            padding: 10px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .topbar-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .topbar-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .topbar-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            font-size: 13px;
+        }
+
+        .topbar-links a:hover {
+            background: rgba(255,255,255,0.04);
+        }
+
+        .layout {
+            display: flex;
+            height: calc(100vh - 52px);
+            background: linear-gradient(135deg, #090909, #1a1010);
+        }
+
+        .left {
+            flex: 2;
+            padding: 10px 12px;
+            overflow-y: auto;
+        }
+
+        .right {
+            flex: 1;
+            padding: 10px 12px;
+            border-left: 1px solid var(--border-soft);
+            background: radial-gradient(circle at top, #2a1414, #12090a);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Pestañas de categorías */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: rgba(0,0,0,0.4);
+            color: var(--text-muted);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .tab-btn.active {
+            color: #000;
+            font-weight: 600;
+            background: linear-gradient(90deg, #ffd166, #ff7b00);
+            border-color: #ffb347;
+        }
+
+        .category-block {
+            display: none; /* se muestra via JS */
+        }
+
+        .category-block.active {
+            display: block;
+        }
+
+        .category-title {
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin: 4px 0 8px;
+            color: var(--accent-bebidas);
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        form { margin: 0; }
+
+        button.product {
+            padding: 12px 10px;
+            min-width: 120px;
+            min-height: 72px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        button.product:active {
+            transform: scale(0.96);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Colores por categoría */
+        button.product[data-cat="Bebidas"] {
+            border-color: rgba(255, 209, 102, 0.6);
+            background: radial-gradient(circle at top, #3b2a14, #201109);
+        }
+
+        button.product[data-cat="Comidas"] {
+            border-color: rgba(167, 209, 41, 0.7);
+            background: radial-gradient(circle at top, #283414, #141b09);
+        }
+
+        .product-name {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .product-price {
+            color: var(--accent-bebidas);
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 17px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .line-main {
+            display: inline-flex;
+            flex-direction: column;
+        }
+
+        .line-name { font-weight: 500; }
+        .line-qty-price { font-size: 12px; color: var(--text-muted); }
+
+        .line-actions form { display: inline; }
+
+        .qty-btn {
+            margin-left: 4px;
+            padding: 3px 7px;
+            font-size: 11px;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: #2a1818;
+            color: var(--text-main);
+        }
+
+        .qty-btn.delete {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .cart-top { margin-bottom: 10px; }
+
+        .cart-total {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-bebidas);
+        }
+
+        .cart-empty {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .cart-panel {
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .cart-buttons { margin-top: 10px; }
+
+        .btn-primary {
+            padding: 12px;
+            font-size: 17px;
+            width: 100%;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(90deg, #ff7b00, #ffb300);
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .btn-primary:active { transform: scale(0.97); }
+
+        .btn-secondary {
+            margin-top: 8px;
+            padding: 9px;
+            font-size: 14px;
+            width: 100%;
+            border-radius: 999px;
+            border: 1px solid var(--border-soft);
+            background: #1f1212;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                flex-direction: column;
+                height: auto;
+            }
+            .right {
+                border-left: none;
+                border-top: 1px solid var(--border-soft);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-title">BAR CHOLO · TPV</div>
+            <div class="topbar-sub">Modo barra · Mercado</div>
+        </div>
+        <div class="topbar-links">
+            <a href="{% url 'tpv' %}">TPV</a>
+            <a href="{% url 'report_today' %}">Informe hoy</a>
+            <a href="{% url 'reset_data' %}">Reset ventas</a>
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="left">
+            <!-- Pestañas de categorías -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="Bebidas">Bebidas</button>
+                <button class="tab-btn" data-tab="Comidas">Comidas</button>
+            </div>
+
+            <!-- Bloque BEBIDAS -->
+            <div class="category-block active" data-block="Bebidas">
+                <div class="category-title">Bebidas</div>
+                <div class="products">
+                    {% for cat in categories %}
+                        {% if cat.name == "Bebidas" %}
+                            {% for p in cat.products.all %}
+                            <form method="post" action="{% url 'add_to_cart' p.id %}">
+                                {% csrf_token %}
+                                <button class="product" data-cat="Bebidas">
+                                    <span class="product-name">{{ p.name }}</span>
+                                    <span class="product-price">{{ p.price }} €</span>
+                                </button>
+                            </form>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Bloque COMIDAS -->
+            <div class="category-block" data-block="Comidas">
+                <div class="category-title" style="color: var(--accent-comidas);">Comidas</div>
+                <div class="products">
+                    {% for cat in categories %}
+                        {% if cat.name == "Comidas" %}
+                            {% for p in cat.products.all %}
+                            <form method="post" action="{% url 'add_to_cart' p.id %}">
+                                {% csrf_token %}
+                                <button class="product" data-cat="Comidas">
+                                    <span class="product-name">{{ p.name }}</span>
+                                    <span class="product-price">{{ p.price }} €</span>
+                                </button>
+                            </form>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="cart-panel">
+                <div class="cart-top">
+                    <h2>Carrito</h2>
+
+                    {% if cart %}
+                        <ul>
+                            {% for pid, item in cart.items %}
+                            <li>
+                                <div class="line-main">
+                                    <span class="line-name">{{ item.name }}</span>
+                                    <span class="line-qty-price">
+                                        x {{ item.qty }} — {{ item.price }} €
+                                    </span>
+                                </div>
+
+                                <div class="line-actions">
+                                    <form method="post"
+                                          action="{% url 'remove_from_cart' pid %}"
+                                          style="display:inline;">
+                                        {% csrf_token %}
+                                        <button class="qty-btn">➖</button>
+                                    </form>
+
+                                    <form method="post"
+                                          action="{% url 'delete_from_cart' pid %}"
+                                          style="display:inline;">
+                                        {% csrf_token %}
+                                        <button class="qty-btn delete">❌</button>
+                                    </form>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="cart-total">
+                            Total: {{ total }} €
+                        </div>
+                    {% else %}
+                        <p class="cart-empty">El carrito está vacío.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="cart-buttons">
+                {% if cart %}
+                    <form method="post" action="{% url 'charge' %}">
+                        {% csrf_token %}
+                        <button class="btn-primary">COBRAR</button>
+                    </form>
+
+                    <form method="post" action="{% url 'clear_cart' %}">
+                        {% csrf_token %}
+                        <button class="btn-secondary">Vaciar carrito</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- JS pestañas + (si quieres) sonidos -->
+    <script>
+        // Lógica de pestañas
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const blocks = document.querySelectorAll(".category-block");
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const tab = btn.getAttribute("data-tab");
+
+                tabButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                blocks.forEach(block => {
+                    if (block.getAttribute("data-block") === tab) {
+                        block.classList.add("active");
+                    } else {
+                        block.classList.remove("active");
+                    }
+                });
+            });
+        });
+
+        // Si ya tienes los sonidos en /static/core/sounds/, puedes descomentar esto:
+        /*
+        const sndAdd = new Audio("{% static 'core/sounds/add.wav' %}");
+        const sndRemove = new Audio("{% static 'core/sounds/remove.wav' %}");
+        const sndDelete = new Audio("{% static 'core/sounds/delete.wav' %}");
+        const sndConfirm = new Audio("{% static 'core/sounds/confirm.wav' %}");
+
+        document.querySelectorAll("form[action*='add']").forEach(f => {
+            f.addEventListener("submit", () => sndAdd.play());
+        });
+        document.querySelectorAll("form[action*='remove']").forEach(f => {
+            f.addEventListener("submit", () => sndRemove.play());
+        });
+        document.querySelectorAll("form[action*='delete']").forEach(f => {
+            f.addEventListener("submit", () => sndDelete.play());
+        });
+        document.querySelectorAll("form[action*='charge']").forEach(f => {
+            f.addEventListener("submit", () => sndConfirm.play());
+        });
+        */
+    </script>
+</body>
+</html>
+

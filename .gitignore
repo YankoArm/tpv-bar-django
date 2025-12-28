@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+*.sqlite3
+*.log
+*.pot
+
+# Django static/media (si usas estas carpetas)
+staticfiles/
+media/
+
+# VS Code / IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Environment variables / secrets
+.env

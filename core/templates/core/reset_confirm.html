@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Confirmar borrado</title>
+    <style>
+        body { font-family: sans-serif; background:#111; color:white; text-align:center; padding-top:80px; }
+        .box {
+            display:inline-block;
+            padding:30px;
+            background:#1d1d2a;
+            border:1px solid #333;
+            border-radius:10px;
+        }
+        button {
+            background:#ff4b4b;
+            border:none;
+            padding:12px 25px;
+            color:white;
+            font-size:16px;
+            margin-top:15px;
+            border-radius:6px;
+        }
+        a { display:block; margin-top:20px; color:#aaa; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>¿Borrar TODAS las ventas?</h1>
+    <p>Esta acción no se puede deshacer.<br>Solo debes usarla para pruebas o reiniciar el TPV.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sí, borrar todo</button>
+    </form>
+
+    <a href="/tpv/">Cancelar</a>
+</div>
+</body>
+</html>
