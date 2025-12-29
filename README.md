@@ -56,6 +56,7 @@ python manage.py runserver
 Una vez iniciado, accede desde el navegador a:
 
 - http://127.0.0.1:8000/
+- La ruta raíz redirige automáticamente a la interfaz del TPV.
 
 ---
 
