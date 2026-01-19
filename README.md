@@ -10,9 +10,9 @@ Este proyecto forma parte de mi portfolio personal y está enfocado al aprendiza
 
 - Gestión de productos
 - Registro de ventas
-- Selección de método de pago
+- Selección de método de pago (simulado)
 - Interfaz web sencilla para el TPV
-- Generación de informes básicos
+- Visualización básica de ventas registradas
 
 ---
 
@@ -64,7 +64,7 @@ Una vez iniciado, accede desde el navegador a:
 
 - El sistema carga los productos disponibles.
 - Se registran las ventas a través de la interfaz web.
-- Cada venta puede asociarse a un método de pago.
+- Cada venta se registra mediante un formulario web y queda almacenada en la base de datos.
 - Los datos se almacenan en una base de datos local SQLite.
 
 ---
