@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import redirect
+from django.views.generic import RedirectView
 from core.views import tpv_view, add_to_cart, clear_cart, charge, remove_from_cart, delete_from_cart, report_today, reset_data
 
 urlpatterns = [
-    path("", lambda request: redirect("tpv")),
+    path("", RedirectView.as_view(pattern_name="tpv", permanent=False)),
     path("admin/", admin.site.urls),
     path("tpv/", tpv_view, name="tpv"),
     path("add/<int:product_id>/", add_to_cart, name="add_to_cart"),
@@ -32,4 +32,5 @@ urlpatterns = [
     path("reset/", reset_data, name="reset_data"),
 
 ]
+
 
